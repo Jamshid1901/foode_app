@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "195591511601",
+    "project_id": "foode-cb266",
+    "storage_bucket": "foode-cb266.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195591511601:android:b1d71b9b5b0103b3d4ff10",
+        "android_client_info": {
+          "package_name": "com.example.foode_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195591511601-1i29fie5if1qh8l9bs4ej4cfa26ornri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyseDXJJdjsZ4ivJM1cxibKVDQBKTSoF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195591511601-1i29fie5if1qh8l9bs4ej4cfa26ornri.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
