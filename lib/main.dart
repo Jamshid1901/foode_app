@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:foode_app/controller/auth_controller.dart';
+import 'package:foode_app/controller/user_controller.dart';
 import 'package:provider/provider.dart';
 
 import 'view/pages/auth/splash_page.dart';
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthController())
+        ChangeNotifierProvider(create: (context) => AuthController()),
+        ChangeNotifierProvider(create: (context) => UserController())
       ],
       child: const MaterialApp(
         title: 'Flutter Demo',
