@@ -18,4 +18,9 @@ class UserController extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  logOut(VoidCallback onSuccess) async {
+    await LocalStore.storeClear();
+    onSuccess();
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foode_app/controller/user_controller.dart';
+import 'package:foode_app/view/pages/auth/splash_page.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,6 +34,16 @@ class _HomePageState extends State<HomePage> {
                 Text(context.watch<UserController>().user?.username ?? ""),
                 Text(context.watch<UserController>().user?.phone ?? ""),
                 Text(context.watch<UserController>().user?.email ?? ""),
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<UserController>().logOut(() {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const SplashPage()),
+                            (route) => false);
+                      });
+                    },
+                    child: const Text("Log out"))
               ],
             ),
     );

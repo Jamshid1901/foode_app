@@ -8,28 +8,55 @@ class AuthController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   String verificationId = '';
   String phone = "";
+  String? errorText;
   bool isLoading = false;
+
+  Future<bool> checkPhone(String phone) async {
+    try {
+      var res = await firestore
+          .collection("users")
+          .where("phone", isEqualTo: phone)
+          .get();
+      if (res.docs.first != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
 
   sendSms(String phone, VoidCallback codeSend) async {
     isLoading = true;
+    errorText = null;
     notifyListeners();
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: phone,
-      verificationCompleted: (PhoneAuthCredential credential) {
-        print(credential.toString());
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        print(e.toString());
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        this.phone = phone;
-        isLoading = false;
-        notifyListeners();
-        codeSend();
-        this.verificationId = verificationId;
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
+    if (await checkPhone(phone)) {
+      errorText =
+          "bu nomer ga uje account ochilgan";
+      isLoading = false;
+      notifyListeners();
+    } else {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phone,
+        verificationCompleted: (PhoneAuthCredential credential) {
+          print(credential.toString());
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print(e.toString());
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          this.phone = phone;
+          isLoading = false;
+          notifyListeners();
+          codeSend();
+          this.verificationId = verificationId;
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    }
   }
 
   checkCode(String code, VoidCallback onSuccess) async {
@@ -71,5 +98,33 @@ class AuthController extends ChangeNotifier {
       await LocalStore.setDocId(value.id);
       onSuccess();
     });
+  }
+
+  login(String phone, String password, VoidCallback onSuccess) async {
+    isLoading = true;
+    errorText = null;
+    notifyListeners();
+    try {
+      var res = await firestore
+          .collection("users")
+          .where("phone", isEqualTo: phone)
+          .get();
+      if (res.docs.first["password"] == password) {
+        LocalStore.setDocId(res.docs.first.id);
+        onSuccess();
+        isLoading = false;
+        notifyListeners();
+      } else {
+        errorText =
+            "Password xatto bolishi mumkin yoki bunaqa nomer bn sign up qilinmagan";
+        isLoading = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      errorText =
+          "Password xatto bolishi mumkin yoki bunaqa nomer bn sign up qilinmagan";
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

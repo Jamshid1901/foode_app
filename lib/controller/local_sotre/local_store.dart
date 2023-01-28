@@ -12,4 +12,9 @@ abstract class LocalStore {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     return sharedPreferences.getString("docId");
   }
+
+  static storeClear() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.clear();
+  }
 }

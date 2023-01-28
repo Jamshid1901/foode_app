@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foode_app/controller/auth_controller.dart';
 import 'package:foode_app/view/component/custom_text_from.dart';
+import 'package:foode_app/view/pages/auth/login_page.dart';
 import 'package:foode_app/view/pages/auth/verfy_page.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +44,9 @@ class _SignUpState extends State<SignUp> {
               label: "Phone",
               keyboardType: TextInputType.phone,
             ),
+            context.watch<AuthController>().errorText != null
+                ? Text(context.watch<AuthController>().errorText ?? "")
+                : const SizedBox.shrink(),
             ElevatedButton(
                 onPressed: () {
                   context.read<AuthController>().sendSms(controller.text, () {
@@ -57,7 +61,13 @@ class _SignUpState extends State<SignUp> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text("Sign up"))
+                    : const Text("Sign up")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const LoginPage()));
+                },
+                child: const Text("Sign In Page"))
           ],
         ),
       ),
