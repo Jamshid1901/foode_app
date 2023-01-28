@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foode_app/view/pages/auth/sign_up.dart';
 
 import 'login_page.dart';
 
@@ -14,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (_) => LoginPage()), (route) => false);
+          MaterialPageRoute(builder: (_) => SignUp()), (route) => false);
     });
 
     super.initState();

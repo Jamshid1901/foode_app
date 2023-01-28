@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:foode_app/controller/auth_controller.dart';
+import 'package:provider/provider.dart';
 
 import 'view/pages/auth/splash_page.dart';
 
@@ -14,12 +16,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthController())
+      ],
+      child: const MaterialApp(
+        title: 'Flutter Demo',
+        home: SplashPage(),
       ),
-      home: SplashPage(),
     );
   }
 }
