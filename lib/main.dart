@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foode_app/controller/auth_controller.dart';
 import 'package:foode_app/controller/user_controller.dart';
 import 'package:provider/provider.dart';
@@ -22,9 +23,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthController()),
         ChangeNotifierProvider(create: (context) => UserController())
       ],
-      child: const MaterialApp(
-        title: 'Flutter Demo',
-        home: SplashPage(),
+      child: ScreenUtilInit(
+          designSize: const Size(360, 690),
+          minTextAdapt: true,
+          splitScreenMode: true,
+        builder: (context,child) {
+          return const MaterialApp(
+            title: 'Flutter Demo',
+            home: SplashPage(),
+          );
+        }
       ),
     );
   }

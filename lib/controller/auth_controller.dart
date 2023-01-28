@@ -1,14 +1,22 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:foode_app/controller/local_sotre/local_store.dart';
 import 'package:foode_app/model/user_model.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AuthController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final ImagePicker _image = ImagePicker();
+  UserModel? userModel;
   String verificationId = '';
   String phone = "";
   String? errorText;
+  String imagePath = "";
   bool isLoading = false;
 
   Future<bool> checkPhone(String phone) async {
@@ -34,8 +42,7 @@ class AuthController extends ChangeNotifier {
     errorText = null;
     notifyListeners();
     if (await checkPhone(phone)) {
-      errorText =
-          "bu nomer ga uje account ochilgan";
+      errorText = "bu nomer ga uje account ochilgan";
       isLoading = false;
       notifyListeners();
     } else {
@@ -75,7 +82,7 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  createUser(
+  setStateUser(
       {required String name,
       required String username,
       required String password,
@@ -83,21 +90,16 @@ class AuthController extends ChangeNotifier {
       required String gender,
       required String birth,
       required VoidCallback onSuccess}) {
-    firestore
-        .collection("users")
-        .add(UserModel(
-          name: name,
-          username: username,
-          password: password,
-          email: email,
-          gender: gender,
-          phone: phone,
-          birth: birth,
-        ).toJson())
-        .then((value) async {
-      await LocalStore.setDocId(value.id);
-      onSuccess();
-    });
+    userModel = UserModel(
+      name: name,
+      username: username,
+      password: password,
+      email: email,
+      gender: gender,
+      phone: phone,
+      birth: birth,
+    );
+    onSuccess();
   }
 
   login(String phone, String password, VoidCallback onSuccess) async {
@@ -126,5 +128,55 @@ class AuthController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  getImageCamera() {
+    _image.pickImage(source: ImageSource.camera).then((value) async {
+      if (value != null) {
+        CroppedFile? cropperImage =
+            await ImageCropper().cropImage(sourcePath: value.path);
+        imagePath = cropperImage?.path ?? "";
+        notifyListeners();
+      }
+    });
+    notifyListeners();
+  }
+
+  getImageGallery() {
+    _image.pickImage(source: ImageSource.gallery).then((value) async {
+      if (value != null) {
+        CroppedFile? cropperImage =
+            await ImageCropper().cropImage(sourcePath: value.path);
+        imagePath = cropperImage?.path ?? "";
+        notifyListeners();
+      }
+    });
+    notifyListeners();
+  }
+
+  createUser(VoidCallback onSuccess) async {
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child("avatars/${DateTime.now().toString()}");
+    await storageRef.putFile(File(imagePath ?? ""));
+
+    String url = await storageRef.getDownloadURL();
+
+    firestore
+        .collection("users")
+        .add(UserModel(
+                name: userModel?.name ?? "",
+                username: userModel?.username ?? "",
+                password: userModel?.password ?? "",
+                email: userModel?.email ?? "",
+                gender: userModel?.gender ?? "",
+                phone: userModel?.phone ?? "",
+                birth: userModel?.birth ?? "",
+                avatar: url)
+            .toJson())
+        .then((value) async {
+      await LocalStore.setDocId(value.id);
+      onSuccess();
+    });
   }
 }

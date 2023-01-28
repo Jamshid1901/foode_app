@@ -6,6 +6,8 @@ import 'package:foode_app/view/component/custom_text_from.dart';
 import 'package:foode_app/view/pages/home/home_page.dart';
 import 'package:provider/provider.dart';
 
+import 'set_avatar.dart';
+
 class SetBioPage extends StatefulWidget {
   const SetBioPage({Key? key}) : super(key: key);
 
@@ -58,7 +60,7 @@ class _SetBioPageState extends State<SetBioPage> {
             CustomTextFrom(controller: passwordController, label: "Password"),
             ElevatedButton(
                 onPressed: () {
-                  context.read<AuthController>().createUser(
+                  context.read<AuthController>().setStateUser(
                       name: nameController.text,
                       username: usernameController.text,
                       password: passwordController.text,
@@ -68,7 +70,7 @@ class _SetBioPageState extends State<SetBioPage> {
                       onSuccess: () {
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (_) => HomePage()),
+                            MaterialPageRoute(builder: (_) => SetAvatar()),
                             (route) => false);
                       });
                 },
