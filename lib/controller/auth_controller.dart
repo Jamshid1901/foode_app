@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:foode_app/controller/local_sotre/local_store.dart';
 import 'package:foode_app/model/user_model.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -18,6 +19,7 @@ class AuthController extends ChangeNotifier {
   String? errorText;
   String imagePath = "";
   bool isLoading = false;
+  bool isGoogleLoading = false;
 
   Future<bool> checkPhone(String phone) async {
     try {
@@ -178,5 +180,45 @@ class AuthController extends ChangeNotifier {
       await LocalStore.setDocId(value.id);
       onSuccess();
     });
+  }
+
+  loginGoogle() async {
+    isGoogleLoading = true;
+    notifyListeners();
+    GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    GoogleSignInAuthentication? googleAuth = await googleUser!.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    final  userObj = await FirebaseAuth.instance.signInWithCredential(credential);
+
+    print(userObj.user?.displayName ?? "");
+    print(userObj.user?.displayName ?? "");
+    print(userObj.user?.uid ?? "");
+    print(userObj.user?.email ?? "");
+    print(userObj.user?.phoneNumber ?? "");
+
+    firestore
+        .collection("users")
+        .add(UserModel(
+                name: userObj.user?.displayName ?? "",
+                username: userObj.user?.displayName ?? "",
+                password: userObj.user?.uid ?? "",
+                email: userObj.user?.email ?? "",
+                gender: "",
+                phone: userObj.user?.phoneNumber ?? "",
+                birth: "",
+                avatar: userObj.user?.photoURL ?? "")
+            .toJson())
+        .then((value) async {
+      await LocalStore.setDocId(value.id);
+      _googleSignIn.signOut();
+    });
+
+    isGoogleLoading = false;
+    notifyListeners();
   }
 }

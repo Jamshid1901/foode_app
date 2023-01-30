@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foode_app/controller/auth_controller.dart';
 import 'package:foode_app/view/component/custom_text_from.dart';
 import 'package:foode_app/view/pages/auth/login_page.dart';
 import 'package:foode_app/view/pages/auth/verfy_page.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class SignUp extends StatefulWidget {
@@ -67,7 +69,23 @@ class _SignUpState extends State<SignUp> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const LoginPage()));
                 },
-                child: const Text("Sign In Page"))
+                child: const Text("Sign In Page")),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () async {
+                      context.read<AuthController>().loginGoogle();
+                    },
+                    child: context.watch<AuthController>().isGoogleLoading
+                        ? const Padding(
+                          padding: EdgeInsets.all(2.0),
+                          child: CircularProgressIndicator(color: Colors.white,),
+                        )
+                        : const Text("Google")),
+                ElevatedButton(onPressed: () {}, child: Text("Facebook")),
+              ],
+            )
           ],
         ),
       ),
