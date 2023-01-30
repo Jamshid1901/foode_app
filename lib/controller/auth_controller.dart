@@ -182,7 +182,7 @@ class AuthController extends ChangeNotifier {
     });
   }
 
-  loginGoogle() async {
+  loginGoogle(VoidCallback onSuccess) async {
     isGoogleLoading = true;
     notifyListeners();
     GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -194,30 +194,37 @@ class AuthController extends ChangeNotifier {
       idToken: googleAuth.idToken,
     );
     final  userObj = await FirebaseAuth.instance.signInWithCredential(credential);
-
-    print(userObj.user?.displayName ?? "");
-    print(userObj.user?.displayName ?? "");
-    print(userObj.user?.uid ?? "");
-    print(userObj.user?.email ?? "");
-    print(userObj.user?.phoneNumber ?? "");
-
-    firestore
-        .collection("users")
-        .add(UserModel(
-                name: userObj.user?.displayName ?? "",
-                username: userObj.user?.displayName ?? "",
-                password: userObj.user?.uid ?? "",
-                email: userObj.user?.email ?? "",
-                gender: "",
-                phone: userObj.user?.phoneNumber ?? "",
-                birth: "",
-                avatar: userObj.user?.photoURL ?? "")
+      print(userObj.additionalUserInfo?.isNewUser);
+      if(userObj.additionalUserInfo?.isNewUser ?? true){
+        // sing in
+        firestore
+            .collection("users")
+            .add(UserModel(
+            name: userObj.user?.displayName ?? "",
+            username: userObj.user?.displayName ?? "",
+            password: userObj.user?.uid ?? "",
+            email: userObj.user?.email ?? "",
+            gender: "",
+            phone: userObj.user?.phoneNumber ?? "",
+            birth: "",
+            avatar: userObj.user?.photoURL ?? "")
             .toJson())
-        .then((value) async {
-      await LocalStore.setDocId(value.id);
-      _googleSignIn.signOut();
-    });
+            .then((value) async {
+          await LocalStore.setDocId(value.id);
+          _googleSignIn.signOut();
+        });
+      }else{
+        // sing up
+        var res = await firestore
+            .collection("users")
+            .where("email", isEqualTo: userObj.user?.email)
+            .get();
 
+        if(res.docs.isNotEmpty){
+          await LocalStore.setDocId(res.docs.first.id);
+        }
+      }
+    onSuccess();
     isGoogleLoading = false;
     notifyListeners();
   }

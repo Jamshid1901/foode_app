@@ -4,6 +4,7 @@ import 'package:foode_app/controller/auth_controller.dart';
 import 'package:foode_app/view/component/custom_text_from.dart';
 import 'package:foode_app/view/pages/auth/login_page.dart';
 import 'package:foode_app/view/pages/auth/verfy_page.dart';
+import 'package:foode_app/view/pages/home/home_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
@@ -75,13 +76,20 @@ class _SignUpState extends State<SignUp> {
               children: [
                 ElevatedButton(
                     onPressed: () async {
-                      context.read<AuthController>().loginGoogle();
+                      context.read<AuthController>().loginGoogle(() {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                            (route) => false);
+                      });
                     },
                     child: context.watch<AuthController>().isGoogleLoading
                         ? const Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: CircularProgressIndicator(color: Colors.white,),
-                        )
+                            padding: EdgeInsets.all(2.0),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
                         : const Text("Google")),
                 ElevatedButton(onPressed: () {}, child: Text("Facebook")),
               ],
