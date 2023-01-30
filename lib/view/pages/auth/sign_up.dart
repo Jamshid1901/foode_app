@@ -91,7 +91,23 @@ class _SignUpState extends State<SignUp> {
                             ),
                           )
                         : const Text("Google")),
-                ElevatedButton(onPressed: () {}, child: Text("Facebook")),
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<AuthController>().loginFacebook(() {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                                (route) => false);
+                      });
+                    },
+                    child: context.watch<AuthController>().isFacebookLoading
+                        ? const Padding(
+                            padding: EdgeInsets.all(2.0),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text("Facebook")),
               ],
             )
           ],

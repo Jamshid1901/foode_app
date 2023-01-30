@@ -16,9 +16,16 @@
         		<key>CFBundleURLSchemes</key>
         		<array>
         			<string>com.googleusercontent.apps.195591511601-9a4mh9rlt60untj7k5eq7okq5ff31ieb</string>
+        			<string>fb1105567196806098</string>
         		</array>
         	</dict>
         </array>
+    <key>FacebookAppID</key>
+    <string>1105567196806098</string>
+    <key>FacebookClientToken</key>
+    <string>64ee1aa580c78599d96b26c2dd1fd6f9</string>
+    <key>FacebookDisplayName</key>
+    <string>Foode</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

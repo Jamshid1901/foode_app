@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:foode_app/controller/local_sotre/local_store.dart';
 import 'package:foode_app/model/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -20,6 +21,7 @@ class AuthController extends ChangeNotifier {
   String imagePath = "";
   bool isLoading = false;
   bool isGoogleLoading = false;
+  bool isFacebookLoading = false;
 
   Future<bool> checkPhone(String phone) async {
     try {
@@ -193,39 +195,89 @@ class AuthController extends ChangeNotifier {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final  userObj = await FirebaseAuth.instance.signInWithCredential(credential);
-      print(userObj.additionalUserInfo?.isNewUser);
-      if(userObj.additionalUserInfo?.isNewUser ?? true){
-        // sing in
-        firestore
-            .collection("users")
-            .add(UserModel(
-            name: userObj.user?.displayName ?? "",
-            username: userObj.user?.displayName ?? "",
-            password: userObj.user?.uid ?? "",
-            email: userObj.user?.email ?? "",
-            gender: "",
-            phone: userObj.user?.phoneNumber ?? "",
-            birth: "",
-            avatar: userObj.user?.photoURL ?? "")
-            .toJson())
-            .then((value) async {
-          await LocalStore.setDocId(value.id);
-          _googleSignIn.signOut();
-        });
-      }else{
-        // sing up
-        var res = await firestore
-            .collection("users")
-            .where("email", isEqualTo: userObj.user?.email)
-            .get();
+    final userObj =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+    print(userObj.additionalUserInfo?.isNewUser);
+    if (userObj.additionalUserInfo?.isNewUser ?? true) {
+      // sing in
+      firestore
+          .collection("users")
+          .add(UserModel(
+                  name: userObj.user?.displayName ?? "",
+                  username: userObj.user?.displayName ?? "",
+                  password: userObj.user?.uid ?? "",
+                  email: userObj.user?.email ?? "",
+                  gender: "",
+                  phone: userObj.user?.phoneNumber ?? "",
+                  birth: "",
+                  avatar: userObj.user?.photoURL ?? "")
+              .toJson())
+          .then((value) async {
+        await LocalStore.setDocId(value.id);
+        _googleSignIn.signOut();
+      });
+    } else {
+      // sing up
+      var res = await firestore
+          .collection("users")
+          .where("email", isEqualTo: userObj.user?.email)
+          .get();
 
-        if(res.docs.isNotEmpty){
-          await LocalStore.setDocId(res.docs.first.id);
-        }
+      if (res.docs.isNotEmpty) {
+        await LocalStore.setDocId(res.docs.first.id);
       }
+    }
     onSuccess();
     isGoogleLoading = false;
+    notifyListeners();
+  }
+
+  loginFacebook(VoidCallback onSuccess) async {
+    isFacebookLoading = true;
+    notifyListeners();
+
+    final fb = FacebookLogin();
+
+    final user = await fb.logIn(permissions: [
+      FacebookPermission.email,
+      FacebookPermission.publicProfile
+    ]);
+
+    final OAuthCredential credential =
+        FacebookAuthProvider.credential(user.accessToken?.token ?? "");
+
+    final userObj =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+    if (userObj.additionalUserInfo?.isNewUser ?? true) {
+      // sing in
+      firestore
+          .collection("users")
+          .add(UserModel(
+                  name: userObj.user?.displayName ?? "",
+                  username: userObj.user?.displayName ?? "",
+                  password: userObj.user?.uid ?? "",
+                  email: userObj.user?.email ?? "",
+                  gender: "",
+                  phone: userObj.user?.phoneNumber ?? "",
+                  birth: "",
+                  avatar: userObj.user?.photoURL ?? "")
+              .toJson())
+          .then((value) async {
+        await LocalStore.setDocId(value.id);
+      });
+    } else {
+      // sing up
+      var res = await firestore
+          .collection("users")
+          .where("email", isEqualTo: userObj.user?.email)
+          .get();
+
+      if (res.docs.isNotEmpty) {
+        await LocalStore.setDocId(res.docs.first.id);
+      }
+    }
+    onSuccess();
+    isFacebookLoading = false;
     notifyListeners();
   }
 }

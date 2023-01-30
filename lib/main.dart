@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foode_app/controller/app_cotroller.dart';
 import 'package:foode_app/controller/auth_controller.dart';
+import 'package:foode_app/controller/product_controller.dart';
 import 'package:foode_app/controller/user_controller.dart';
 import 'package:provider/provider.dart';
 
 import 'view/pages/auth/splash_page.dart';
+import 'view/pages/product/add_product_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthController()),
         ChangeNotifierProvider(create: (context) => UserController()),
+        ChangeNotifierProvider(create: (context) => ProductController()),
         ChangeNotifierProvider(create: (context) => AppController())
       ],
       child: ScreenUtilInit(
@@ -32,7 +35,7 @@ class MyApp extends StatelessWidget {
         builder: (context,child) {
           return const MaterialApp(
             title: 'Flutter Demo',
-            home: SplashPage(),
+            home: AddProductPage(),
           );
         }
       ),
