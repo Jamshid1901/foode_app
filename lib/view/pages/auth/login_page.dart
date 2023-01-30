@@ -41,11 +41,11 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Center(
+            const Center(
               child: Text("Login"),
             ),
             CustomTextFrom(controller: phoneController, label: "Phone"),
-            CustomTextFrom(controller: passwordController, label: "Password"),
+            CustomTextFrom(controller: passwordController, label: "Password",isObscure: true,),
             context.watch<AuthController>().errorText != null
                 ? Text(context.watch<AuthController>().errorText ?? "")
                 : const SizedBox.shrink(),
