@@ -214,6 +214,7 @@ class AuthController extends ChangeNotifier {
               .toJson())
           .then((value) async {
         await LocalStore.setDocId(value.id);
+        onSuccess();
         _googleSignIn.signOut();
       });
     } else {
@@ -225,9 +226,10 @@ class AuthController extends ChangeNotifier {
 
       if (res.docs.isNotEmpty) {
         await LocalStore.setDocId(res.docs.first.id);
+        onSuccess();
       }
     }
-    onSuccess();
+
     isGoogleLoading = false;
     notifyListeners();
   }
@@ -264,6 +266,7 @@ class AuthController extends ChangeNotifier {
               .toJson())
           .then((value) async {
         await LocalStore.setDocId(value.id);
+        onSuccess();
       });
     } else {
       // sing up
@@ -274,9 +277,10 @@ class AuthController extends ChangeNotifier {
 
       if (res.docs.isNotEmpty) {
         await LocalStore.setDocId(res.docs.first.id);
+        onSuccess();
       }
     }
-    onSuccess();
+
     isFacebookLoading = false;
     notifyListeners();
   }

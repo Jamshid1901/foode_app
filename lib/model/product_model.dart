@@ -4,7 +4,7 @@ class ProductModel {
   final String? image;
   final num? price;
   final String? category;
-  final ProductType? type;
+  final String? type;
 
   ProductModel(
       {required this.name,
@@ -37,4 +37,3 @@ class ProductModel {
   }
 }
 
-enum ProductType { KG, PC }
