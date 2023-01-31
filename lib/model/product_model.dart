@@ -14,14 +14,14 @@ class ProductModel {
       required this.category,
       required this.type});
 
-  factory ProductModel.fromJson(Map data) {
+  factory ProductModel.fromJson(Map? data) {
     return ProductModel(
-      name: data["name"],
-      desc: data["desc"],
-      image: data["image"],
-      price: data["price"],
-      category: data["category"],
-      type: data["type"],
+      name: data?["name"],
+      desc: data?["desc"],
+      image: data?["image"],
+      price: data?["price"],
+      category: data?["category"],
+      type: data?["type"],
     );
   }
 

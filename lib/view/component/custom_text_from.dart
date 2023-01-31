@@ -7,6 +7,7 @@ class CustomTextFrom extends StatelessWidget {
   final String label;
   final TextInputType keyboardType;
   final bool isObscure;
+  final ValueChanged<String>? onChange;
 
   const CustomTextFrom({
     Key? key,
@@ -14,6 +15,7 @@ class CustomTextFrom extends StatelessWidget {
     required this.label,
     this.keyboardType = TextInputType.text,
     this.isObscure = false,
+    this.onChange,
   }) : super(key: key);
 
   @override
@@ -23,6 +25,7 @@ class CustomTextFrom extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText:
           isObscure ? (context.watch<AppController>().isVisibility) : false,
+      onChanged: onChange,
       decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(),

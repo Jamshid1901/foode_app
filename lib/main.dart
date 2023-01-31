@@ -7,7 +7,10 @@ import 'package:foode_app/controller/product_controller.dart';
 import 'package:foode_app/controller/user_controller.dart';
 import 'package:provider/provider.dart';
 
+import 'controller/home_controller.dart';
 import 'view/pages/auth/splash_page.dart';
+import 'view/pages/home/categorys_page.dart';
+import 'view/pages/home/home_page.dart';
 import 'view/pages/product/add_product_page.dart';
 
 void main() async {
@@ -26,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthController()),
         ChangeNotifierProvider(create: (context) => UserController()),
         ChangeNotifierProvider(create: (context) => ProductController()),
+        ChangeNotifierProvider(create: (context) => HomeController()),
         ChangeNotifierProvider(create: (context) => AppController())
       ],
       child: ScreenUtilInit(

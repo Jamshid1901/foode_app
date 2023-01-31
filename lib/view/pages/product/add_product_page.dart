@@ -88,7 +88,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                             .addCategory(
                                                 name:
                                                     newCategoryTextEditController
-                                                        .text,
+                                                        .text.toLowerCase(),
                                                 onSuccess: () {
                                                   Navigator.pop(context);
                                                   context.read<ProductController>().getCategory();
