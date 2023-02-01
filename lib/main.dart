@@ -5,6 +5,7 @@ import 'package:foode_app/controller/app_cotroller.dart';
 import 'package:foode_app/controller/auth_controller.dart';
 import 'package:foode_app/controller/product_controller.dart';
 import 'package:foode_app/controller/user_controller.dart';
+import 'package:foode_app/view/pages/home/product_page.dart';
 import 'package:provider/provider.dart';
 
 import 'controller/home_controller.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         builder: (context,child) {
           return const MaterialApp(
             title: 'Flutter Demo',
-            home: AddProductPage(),
+            home: ProductListPage(),
           );
         }
       ),
