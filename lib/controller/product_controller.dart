@@ -44,7 +44,7 @@ class ProductController extends ChangeNotifier {
             image: "",
             price: double.tryParse(price) ?? 0,
             category: res?.docs[selectCategoryIndex].id,
-            type: listOfType[selectTypeIndex])
+            type: listOfType[selectTypeIndex], isLike: false)
         .toJson());
     isSaveLoading = false;
     notifyListeners();

@@ -1,33 +1,62 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:foode_app/controller/local_sotre/local_store.dart';
 import 'package:foode_app/model/banner_model.dart';
 import 'package:foode_app/model/category_model.dart';
 import 'package:foode_app/model/product_model.dart';
 
+import '../model/user_model.dart';
+
 class HomeController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  UserModel? user;
   List<BannerModel> listOfBanners = [];
   List<ProductModel> listOfProduct = [];
   List<CategoryModel> listOfCategory = [];
   List listOfCategoryDocId = [];
+  List listOfProductDocId = [];
   bool _isLoading = true;
   bool setFilter = false;
   bool _isCategoryLoading = true;
   bool _isProductLoading = true;
   int selectIndex = -1;
 
+  getUser() async {
+    String? docId = await LocalStore.getDocId();
+    var res =
+    await firestore.collection("users").doc(docId).get();
+    user = UserModel.fromJson(res.data());
+  }
+
+  changeLike(int index) async {
+    listOfProduct[index].isLike = !listOfProduct[index].isLike;
+    List addDocIdList = [];
+    for (int i=0;i<listOfProduct.length;i++) {
+      if(listOfProduct[i].isLike){
+        addDocIdList.add(listOfProductDocId[i]);
+      }
+    }
+    firestore.collection("users").doc(await LocalStore.getDocId()).update({
+      "array": List<dynamic>.from(addDocIdList.map((e) => e))
+    });
+    notifyListeners();
+  }
+
   changeIndex(int index) async {
     if (selectIndex == index) {
       selectIndex = -1;
+      getProduct(isLimit: false);
     } else {
       selectIndex = index;
-     var res = await firestore
+      var res = await firestore
           .collection("products")
           .where("category", isEqualTo: listOfCategoryDocId[selectIndex])
           .get();
       listOfProduct.clear();
+      listOfProductDocId.clear();
       for (var element in res.docs) {
-        listOfProduct.add(ProductModel.fromJson(element.data()));
+        listOfProduct.add(ProductModel.fromJson(element.data(),user?.likes?.contains(element.id)));
+        listOfProductDocId.add(element.id);
       }
     }
     notifyListeners();
@@ -97,8 +126,10 @@ class HomeController extends ChangeNotifier {
       res = await firestore.collection("products").get();
     }
     listOfProduct.clear();
+    listOfProductDocId.clear();
     for (var element in res.docs) {
-      listOfProduct.add(ProductModel.fromJson(element.data()));
+      listOfProduct.add(ProductModel.fromJson(element.data(),user?.likes?.contains(element.id)));
+      listOfProductDocId.add(element.id);
     }
     _isProductLoading = false;
     notifyListeners();

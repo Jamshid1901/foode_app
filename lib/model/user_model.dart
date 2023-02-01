@@ -37,7 +37,7 @@ class UserModel {
         email: data?["email"],
         gender: data?["gender"],
         phone: data?["phone"],
-        likes: data?["likes"],
+        likes: data?["array"],
         address: data?["address"] != null
             ? AddressModel.fromJson(data?["address"])
             : null);
