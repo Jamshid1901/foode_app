@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         builder: (context,child) {
           return const MaterialApp(
             title: 'Flutter Demo',
-            home: ProductListPage(),
+            home: ChatsPage(),
           );
         }
       ),

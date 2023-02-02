@@ -57,7 +57,10 @@ class _ChatsPageState extends State<ChatsPage> {
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () {
-                              event.createChat(index);
+                              event.createChat(index, (id) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) => MessagePage(docId: id,user:  state.users[index],)));
+                              });
                             },
                             child: Container(
                               margin: EdgeInsets.all(24),
@@ -92,6 +95,7 @@ class _ChatsPageState extends State<ChatsPage> {
                                       builder: (_) => MessagePage(
                                             docId:
                                                 state.listOfDocIdChats[index],
+                                        user:   state.chats[index].resender,
                                           )));
                             },
                             child: Container(
@@ -111,7 +115,12 @@ class _ChatsPageState extends State<ChatsPage> {
                                           ),
                                         ),
                                   const Spacer(),
-                                  Text(state.chats[index].resender.name ?? "")
+                                  Column(
+                                    children: [
+                                      Text(state.chats[index].resender.name ?? ""),
+                                      Text(state.chats[index].userStatus.toString()),
+                                    ],
+                                  )
                                 ],
                               ),
                             ),

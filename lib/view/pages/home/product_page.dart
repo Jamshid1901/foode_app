@@ -115,7 +115,6 @@ class _ProductListPageState extends State<ProductListPage> {
                   return Container(
                     margin: EdgeInsets.all(16),
                     width: double.infinity,
-                    height: 90,
                     color: Colors.pinkAccent,
                     child: Row(
                       children: [
@@ -126,11 +125,13 @@ class _ProductListPageState extends State<ProductListPage> {
                           height: 64,
                           width: 64,
                         ),
-                        Column(
-                          children: [
-                            Text(state.listOfProduct[index].name ?? ""),
-                            Text(state.listOfProduct[index].desc ?? ""),
-                          ],
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(state.listOfProduct[index].name ?? ""),
+                              Text(state.listOfProduct[index].desc ?? ""),
+                            ],
+                          ),
                         ),
                         const Spacer(),
                         Text(state.listOfProduct[index].price.toString()),

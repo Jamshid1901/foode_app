@@ -146,7 +146,6 @@ class _HomePageState extends State<HomePage> {
                         return Container(
                           margin: EdgeInsets.all(16),
                           width: double.infinity,
-                          height: 90,
                           color: Colors.pinkAccent,
                           child: Row(
                             children: [
@@ -165,19 +164,21 @@ class _HomePageState extends State<HomePage> {
                                       height: 64,
                                       width: 64,
                                     ),
-                              Column(
-                                children: [
-                                  Text(context
-                                          .watch<HomeController>()
-                                          .listOfProduct[index]
-                                          .name ??
-                                      ""),
-                                  Text(context
-                                          .watch<HomeController>()
-                                          .listOfProduct[index]
-                                          .desc ??
-                                      ""),
-                                ],
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(context
+                                            .watch<HomeController>()
+                                            .listOfProduct[index]
+                                            .name ??
+                                        ""),
+                                    Text(context
+                                            .watch<HomeController>()
+                                            .listOfProduct[index]
+                                            .desc ??
+                                        ""),
+                                  ],
+                                ),
                               ),
                               Spacer(),
                               Text(context
