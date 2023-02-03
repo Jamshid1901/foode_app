@@ -7,6 +7,7 @@ class CustomTextFrom extends StatelessWidget {
   final String label;
   final TextInputType keyboardType;
   final Widget? suffixIcon;
+  final Widget? prefixIcon;
   final bool isObscure;
   final FocusNode? node;
   final ValueChanged<String>? onChange;
@@ -18,7 +19,9 @@ class CustomTextFrom extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.isObscure = false,
     this.onChange,
-    this.suffixIcon, this.node,
+    this.suffixIcon,
+    this.node,
+    this.prefixIcon,
   }) : super(key: key);
 
   @override
@@ -35,16 +38,18 @@ class CustomTextFrom extends StatelessWidget {
           border: OutlineInputBorder(),
           enabledBorder: OutlineInputBorder(),
           focusedBorder: OutlineInputBorder(),
-          suffixIcon: suffixIcon ?? (isObscure
-              ? IconButton(
-                  onPressed: () {
-                    context.read<AppController>().onChange();
-                  },
-                  icon: context.watch<AppController>().isVisibility
-                      ? const Icon(Icons.visibility)
-                      : const Icon(Icons.visibility_off),
-                )
-              : const SizedBox.shrink())),
+          prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon ??
+              (isObscure
+                  ? IconButton(
+                      onPressed: () {
+                        context.read<AppController>().onChange();
+                      },
+                      icon: context.watch<AppController>().isVisibility
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
+                    )
+                  : const SizedBox.shrink())),
     );
   }
 }

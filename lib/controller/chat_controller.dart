@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foode_app/controller/local_sotre/local_store.dart';
 import 'package:foode_app/model/message_model.dart';
 import 'package:foode_app/model/user_model.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../model/chats_model.dart';
 
 class ChatController extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final ImagePicker _image = ImagePicker();
   List<UserModel> users = [];
   List<ChatsModel> chats = [];
   List<MessageModel> messages = [];
@@ -16,6 +22,7 @@ class ChatController extends ChangeNotifier {
   String userId = "";
   bool addUser = false;
   bool isLoading = true;
+  bool isUploading = false;
   String editMessId = "";
   String oldText = "";
   DateTime? editTime;
@@ -142,7 +149,10 @@ class ChatController extends ChangeNotifier {
     }
   }
 
-  sendMessage(String title, String docId) async {
+  sendMessage(
+      {required String title,
+      required String docId,
+      required String type}) async {
     firestore
         .collection("chats")
         .doc(docId)
@@ -152,6 +162,7 @@ class ChatController extends ChangeNotifier {
           time: DateTime.now(),
           ownerId: await LocalStore.getDocId() ?? "",
           messId: '',
+          type: type,
         ).toJson());
   }
 
@@ -180,6 +191,7 @@ class ChatController extends ChangeNotifier {
             time: time,
             ownerId: userId,
             messId: "",
+            type: "text",
           ).toJson());
     }
     editTime = null;
@@ -203,5 +215,44 @@ class ChatController extends ChangeNotifier {
             : [(element.data()["onlines"] as List)[0], false]
       });
     }
+  }
+
+  getImageGallery(String docId) {
+    _image.pickImage(source: ImageSource.gallery,).then((value) async {
+      if (value != null) {
+        CroppedFile? cropperImage =
+            await ImageCropper().cropImage(sourcePath: value.path);
+        var imagePath = cropperImage?.path ?? "";
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child("chats/image/${DateTime.now().toString()}");
+        isUploading = true;
+        notifyListeners();
+        await storageRef.putFile(File(imagePath));
+        var res = await storageRef.getDownloadURL();
+        sendMessage(title: res, docId: docId, type: "image");
+        isUploading = false;
+        notifyListeners();
+      }
+    });
+  }
+
+
+  getVideoGallery(String docId) {
+    _image.pickVideo(source: ImageSource.gallery,).then((value) async {
+      if (value != null) {
+        var imagePath = value.path;
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child("chats/video/${DateTime.now().toString()}");
+        isUploading = true;
+        notifyListeners();
+        await storageRef.putFile(File(imagePath));
+        var res = await storageRef.getDownloadURL();
+        sendMessage(title: res, docId: docId, type: "video");
+        isUploading = false;
+        notifyListeners();
+      }
+    });
   }
 }

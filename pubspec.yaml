@@ -49,6 +49,8 @@ dependencies:
   flutter_login_facebook: ^1.6.2
   intl: ^0.17.0
   focused_menu: ^1.0.5
+  cached_network_image: ^3.2.3
+  video_player: ^2.5.1
 
 dev_dependencies:
   flutter_test:
