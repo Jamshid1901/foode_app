@@ -91,6 +91,9 @@ class _MessagePageState extends State<MessagePage> {
                                       .type ==
                                   "text"
                               ? MessageItem(
+                                  onReply: () {
+                                    event.onReply(index);
+                                  },
                                   isOwner: state
                                           .messages[state.isUploading
                                               ? index - 1
@@ -110,7 +113,7 @@ class _MessagePageState extends State<MessagePage> {
                                             .messages[state.isUploading
                                                 ? index - 1
                                                 : index]
-                                            .messId,
+                                            .messId!,
                                         time: state
                                             .messages[state.isUploading
                                                 ? index - 1
@@ -129,7 +132,7 @@ class _MessagePageState extends State<MessagePage> {
                                             .messages[state.isUploading
                                                 ? index - 1
                                                 : index]
-                                            .messId);
+                                            .messId!);
                                   },
                                   message: state.messages[
                                       state.isUploading ? index - 1 : index],
@@ -169,45 +172,73 @@ class _MessagePageState extends State<MessagePage> {
           margin:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           color: Colors.white,
-          child: CustomTextFrom(
-            node: messageNode,
-            controller: message,
-            label: "",
-            prefixIcon: Container(
-              color: Colors.red,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      event.getImageGallery(widget.docId);
-                    },
-                    icon: const Icon(Icons.image),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              state.selectReplyIndex == null
+                  ? const SizedBox.shrink()
+                  : IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          const Icon(Icons.replay),
+                          const VerticalDivider(
+                            color: Colors.pinkAccent,
+                            thickness: 2,
+                          ),
+                          Text(state
+                              .messages[state.selectReplyIndex ?? 0].title),
+                          const Spacer(),
+                          IconButton(
+                              onPressed: () {
+                                event.onReply(null);
+                              },
+                              icon: const Icon(Icons.cancel_outlined))
+                        ],
+                      ),
+                    ),
+              CustomTextFrom(
+                node: messageNode,
+                controller: message,
+                label: "",
+                prefixIcon: Container(
+                  color: Colors.red,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          event.getImageGallery(widget.docId);
+                        },
+                        icon: const Icon(Icons.image),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          event.getVideoGallery(widget.docId);
+                        },
+                        icon: const Icon(Icons.video_library),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () {
-                      event.getVideoGallery(widget.docId);
-                    },
-                    icon: const Icon(Icons.video_library),
-                  ),
-                ],
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    state.editTime != null
+                        ? event.editMessage(
+                            chatDocId: widget.docId,
+                            messDocId: state.editMessId,
+                            newMessage: message.text,
+                            time: state.editTime ?? DateTime.now())
+                        : event.sendMessage(
+                            title: message.text,
+                            docId: widget.docId,
+                            type: 'text');
+                    message.clear();
+                    FocusScope.of(context).unfocus();
+                  },
+                  icon: const Icon(Icons.send),
+                ),
               ),
-            ),
-            suffixIcon: IconButton(
-              onPressed: () {
-                state.editTime != null
-                    ? event.editMessage(
-                        chatDocId: widget.docId,
-                        messDocId: state.editMessId,
-                        newMessage: message.text,
-                        time: state.editTime ?? DateTime.now())
-                    : event.sendMessage(
-                        title: message.text, docId: widget.docId, type: 'text');
-                message.clear();
-                FocusScope.of(context).unfocus();
-              },
-              icon: const Icon(Icons.send),
-            ),
+            ],
           ),
         ),
       ),

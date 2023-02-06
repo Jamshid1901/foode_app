@@ -25,6 +25,7 @@ class ChatController extends ChangeNotifier {
   bool isUploading = false;
   String editMessId = "";
   String oldText = "";
+  int? selectReplyIndex;
   DateTime? editTime;
 
   changeEditText(
@@ -110,13 +111,14 @@ class ChatController extends ChangeNotifier {
         .doc(docId)
         .collection("messages")
         .snapshots()
-        .listen((res) {
+        .listen((res) async {
       messages.clear();
       for (var element in res.docs) {
         messages.add(
           MessageModel.fromJson(
             data: element.data(),
             messId: element.id,
+            replyData: element.data()["replyMessage"],
           ),
         );
       }
@@ -163,7 +165,11 @@ class ChatController extends ChangeNotifier {
           ownerId: await LocalStore.getDocId() ?? "",
           messId: '',
           type: type,
-        ).toJson());
+        ).toJson(
+            reply:
+                selectReplyIndex != null ? messages[selectReplyIndex!] : null));
+    selectReplyIndex = null;
+    notifyListeners();
   }
 
   deleteMessage({required String chatDocId, required String messDocId}) {
@@ -218,7 +224,11 @@ class ChatController extends ChangeNotifier {
   }
 
   getImageGallery(String docId) {
-    _image.pickImage(source: ImageSource.gallery,).then((value) async {
+    _image
+        .pickImage(
+      source: ImageSource.gallery,
+    )
+        .then((value) async {
       if (value != null) {
         CroppedFile? cropperImage =
             await ImageCropper().cropImage(sourcePath: value.path);
@@ -237,9 +247,12 @@ class ChatController extends ChangeNotifier {
     });
   }
 
-
   getVideoGallery(String docId) {
-    _image.pickVideo(source: ImageSource.gallery,).then((value) async {
+    _image
+        .pickVideo(
+      source: ImageSource.gallery,
+    )
+        .then((value) async {
       if (value != null) {
         var imagePath = value.path;
         final storageRef = FirebaseStorage.instance
@@ -254,5 +267,10 @@ class ChatController extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  onReply(int? index) {
+    selectReplyIndex = index;
+    notifyListeners();
   }
 }

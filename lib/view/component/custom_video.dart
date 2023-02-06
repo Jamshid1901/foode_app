@@ -18,7 +18,7 @@ class _CustomVideoState extends State<CustomVideo> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-        "https://v.mover.uz/5K3UENY3_m.mp4")
+        widget.videoUrl)
       ..initialize().then((_) {
         setState(() {});
       });
